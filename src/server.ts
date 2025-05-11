@@ -96,7 +96,8 @@ chatIO.on('connection', (socket) => {
         if (!token) return next(new Error('unauthorized'));
 
         try {
-            verifyAccessToken(token);
+            const payload = verifyAccessToken(token);
+            socket.data.user = payload.name;
             return next();
         } catch (err) {
             return next(new Error('unauthorized'));
@@ -115,6 +116,7 @@ chatIO.on('connection', (socket) => {
     socket.on('join_room', (roomId: string) => {
         socket.join(roomId);
         console.log(`Usuario con ID: ${socket.id} se unió a la sala: ${roomId}`);
+        socket.to(roomId).emit('status', { status: 'joined', user: socket.data.user });
     });
 
     // Manejar evento para enviar un mensaje
