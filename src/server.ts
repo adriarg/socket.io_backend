@@ -111,10 +111,15 @@ chatIO.on('connection', (socket) => {
         }
     });
 
-    // Manejar evento para unirse a una sala
-    socket.on('join_room', (roomId: string) => {
+    socket.on('join_room', (roomId: string, userName: string) => {
         socket.join(roomId);
         console.log(`Usuario con ID: ${socket.id} se unió a la sala: ${roomId}`);
+        // Notificar a la resta d'usuaris que un nou usuari s'ha unit 
+        socket.to(roomId).emit('user_joined', {
+            room: roomId,
+            user: userName,
+            message: `${userName} ha entrado a la sala.`
+        });
     });
 
     // Manejar evento para enviar un mensaje
